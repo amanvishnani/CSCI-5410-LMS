@@ -1,0 +1,12 @@
+.registerTitle {
+  font-family: Spicy Rice;
+  color: #000080;
+  text-align: center;
+  padding: 1rem;
+}
+
+.signup-div {
+  border: 1px solid white;
+  box-shadow: 0 5px 10px #efefef;
+  padding: 10px;
+}

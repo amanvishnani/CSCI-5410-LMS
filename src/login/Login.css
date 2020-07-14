@@ -1,0 +1,26 @@
+.loginForm {
+  margin: 2rem auto;
+  text-align: left;
+  width: 450px;
+}
+
+.button {
+  margin-left: 20vh;
+  margin-right: 20vh;
+}
+
+.loginTitle {
+  font-family: Spicy Rice;
+  color: #000080;
+  text-align: center;
+}
+
+.login-div {
+  border: 1px solid white;
+  box-shadow: 0 5px 10px #efefef;
+  padding: 10px;
+}
+
+.card-custom {
+  border: none !important;
+}
