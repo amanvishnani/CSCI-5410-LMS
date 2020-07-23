@@ -27,7 +27,8 @@ class Login extends Component {
 
   async apiCall() {
     try {
-      console.log("loing worked");
+      console.log("login worked");
+      localStorage.setItem("email", this.state.email);
       this.props.history.push("/home");
     } catch (err) {
       this.setState({

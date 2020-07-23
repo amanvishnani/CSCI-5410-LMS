@@ -5,6 +5,7 @@ import Register from "./register/Register";
 import Home from "./home/Home";
 import NotFound from "./NotFound";
 import AppHeader from "./AppHeader";
+import ChatBox from "./chat_module/ChatBox";
 
 import "./App.css";
 
@@ -39,6 +40,7 @@ class App extends Component {
             <Redirect to="/not-found"></Redirect>
           </Switch>
         </section>
+        <section>{localStorage.email ? <ChatBox></ChatBox> : null}</section>
       </article>
     );
   }
