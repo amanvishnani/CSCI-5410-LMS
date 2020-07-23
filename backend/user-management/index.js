@@ -1,4 +1,5 @@
 const express = require('express')
+var cors = require('cors')
 var bodyParser = require('body-parser');
 
 
@@ -9,6 +10,8 @@ const { signUp } = require('./AuthService');
 const PORT = process.env.PORT || 3000;
 
 let app = express()
+
+app.use(cors())
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }))
