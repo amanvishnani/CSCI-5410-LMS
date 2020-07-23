@@ -1,0 +1,23 @@
+{
+    "prod": {
+        "awscloudformation": {
+            "AuthRoleName": "amplify-serverlessproject-prod-123553-authRole",
+            "UnauthRoleArn": "arn:aws:iam::643336336647:role/amplify-serverlessproject-prod-123553-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::643336336647:role/amplify-serverlessproject-prod-123553-authRole",
+            "Region": "us-east-1",
+            "DeploymentBucketName": "amplify-serverlessproject-prod-123553-deployment",
+            "UnauthRoleName": "amplify-serverlessproject-prod-123553-unauthRole",
+            "StackName": "amplify-serverlessproject-prod-123553",
+            "StackId": "arn:aws:cloudformation:us-east-1:643336336647:stack/amplify-serverlessproject-prod-123553/3d7b6a10-ccfa-11ea-9a5c-122ae4ce5d77",
+            "AmplifyAppId": "d24fzj3xp6j1cu"
+        },
+        "categories": {
+            "hosting": {
+                "amplifyhosting": {
+                    "appId": "d24fzj3xp6j1cu",
+                    "type": "manual"
+                }
+            }
+        }
+    }
+}
