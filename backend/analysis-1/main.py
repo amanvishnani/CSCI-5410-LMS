@@ -3,6 +3,7 @@ import tempfile
 from werkzeug.utils import secure_filename
 from google.cloud import storage
 from flask import jsonify
+import pickle
 
 headers = {
     'Access-Control-Allow-Origin': '*',
@@ -76,12 +77,34 @@ def listFiles(request):
 
 
 def analyzeFileName(data, context):
-    
-    print('Event ID: {}'.format(context.event_id))
-    print('Event type: {}'.format(context.event_type))
     print('Bucket: {}'.format(data['bucket']))
     print('File: {}'.format(data['name']))
-    print('Metageneration: {}'.format(data['metageneration']))
-    print('Created: {}'.format(data['timeCreated']))
-    print('Updated: {}'.format(data['updated']))
+    uploaded_file_name = data['name']
+    model = load_object('model.pkl')
+    vectorizer = load_object('vectorizer.pkl')
+    matr = vectorizer.transform([uploaded_file_name])
+    res = model.predict(matr)
+    center_number = res[0]
+    centeroides = model.cluster_centers_[center_number]
+    metadata = {
+        'center_number': center_number,
+        'centeroides': str(centeroides)
+    }
+    blob = bucket.blob(uploaded_file_name)
+    blob.metadata = metadata
+    blob.patch()
+
     
+
+def download_file(file_name, file_path):
+    bucket = client.bucket('kmeans-train-data')
+    blob = bucket.blob(file_name)
+    blob.download_to_filename(file_path)
+    return 
+
+def load_object(file_name):
+    file_path = get_file_path(file_name)
+    download_file(file_name, file_path)
+    with open(file_path, 'rb') as pickle_file:
+        obj = pickle.load(pickle_file)
+        return obj
