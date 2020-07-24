@@ -1,13 +1,7 @@
 const firebase = require('firebase')
-const admin = require('firebase-admin');
-var serviceAccount = require("./serviceAccountKey.json");
+const { v4: uuidv4 } = require('uuid');
+const Challenge = require('./model/Challenge')
 
-console.log("Init Admin");
-
-admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-    databaseURL: "https://csci-5410-av.firebaseio.com"
-});
 
 var firebaseConfig = {
     apiKey: "AIzaSyAnjc7Guj74WNwuvoQhRIP77sA5il0YJqo",
@@ -36,18 +30,21 @@ async function signIn(emailId, password) {
  * Returns a challenge for UserId
  */
 async function createChallenge(userId) {
-    console.log("Attempting to read Doc 1");
-    let fs = admin.firestore()
-    let mfa = fs.collection("mfa")
-    let docsRef = mfa.doc(`${user.uid}`)
-    let doc = await docsRef.get()
-    let data = doc.data()
-    console.log("Attempting to read Doc 4");
-    let challangeObj = {
+    const fs = firebase.firestore();
+    let docRef = fs.doc(`/mfa/${userId}`)
+    let docSnap = await docRef.get()
+    let { securityQuestion } = docSnap.data()
+    let challengeText = uuidv4()
+    await Challenge.create({
+        text: challengeText,
+        userId: userId
+    })
+    let challengeeObj = {
         type: "CHALLENGE",
-        question: data.securityQuestion
+        question: securityQuestion,
+        challengeCode: challengeText
     }
-    return challangeObj;
+    return challengeeObj;
 }
 module.exports = {
     signIn, createChallenge
