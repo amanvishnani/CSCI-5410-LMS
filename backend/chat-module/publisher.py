@@ -2,6 +2,7 @@ import time
 from google.cloud import pubsub_v1
 import json
 from google.cloud import storage
+import uuid
 
 # TODO(developer)
 project_id = "testproject-277421"
@@ -98,6 +99,17 @@ def hello_world(request):
                     print('content_as_dict 1', content_as_dict)
 
                 data_as_obj = json.loads(data)
+                print('data_as_obj', data_as_obj)
+
+                id = uuid.uuid1()
+                print('id', id)
+                print('type id', type(id))
+
+                idstr = str(id)
+                print('id', idstr)
+                print('type id', type(idstr))
+
+                data_as_obj['message']['id'] = idstr
                 print('data_as_obj', data_as_obj)
 
                 content_as_dict.append(data_as_obj)
