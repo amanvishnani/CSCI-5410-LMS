@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Switch, Route, Redirect, withRouter } from "react-router-dom";
 import Login from "./login/Login";
 import Register from "./register/Register";
+import UploadFile from "./upload-file/UploadFile";
 import Home from "./home/Home";
 import NotFound from "./NotFound";
 import AppHeader from "./AppHeader";
@@ -32,6 +33,12 @@ class App extends Component {
               path="/home"
               render={(props) => <Home {...props}></Home>}
             ></Route>
+
+            <Route
+              path="/upload-file"
+            >
+              <UploadFile></UploadFile>
+            </Route>
 
             <Route
               path="/not-found"
