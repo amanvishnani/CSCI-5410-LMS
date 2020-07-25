@@ -1,8 +1,10 @@
 import React, { Component } from "react";
-import AppHeader from "../AppHeader";
+// import AppHeader from "../AppHeader";
 import "./Register.css";
 import errMsg from "../errorMessages";
 import { Modal, Button } from "react-bootstrap";
+import { getOrgs, getEmailAvailibility, registerUser } from "./RegisterService";
+import { withRouter } from "react-router-dom";
 
 class Register extends Component {
   constructor(props) {
@@ -14,7 +16,6 @@ class Register extends Component {
       email: "",
       password: "",
       confirmPassword: "",
-      contact: "",
       institution: "",
       securityQue: "",
       securityAns: "",
@@ -22,7 +23,34 @@ class Register extends Component {
       registrationFlag: false,
       errorMsg: "",
       modalFlag: false,
+      orgs: [],
     };
+  }
+
+  async setupOrgs() {
+    let orgs = await getOrgs()
+    let partialState = {
+      orgs
+    }
+    if(orgs.length > 0) {
+      partialState.institution = orgs[0].id  
+    }
+    this.setState(partialState);
+  }
+
+  async checkEmailAvailable() {
+    let { email } = this.state;
+    let ava = await getEmailAvailibility(email);
+    if (!ava.available) {
+      this.setState({
+        errorMsg: errMsg["6"],
+        validationErrorFlag: true,
+      });
+    }
+  }
+
+  componentDidMount() {
+    this.setupOrgs()
   }
 
   handleOnChange = (e) => {
@@ -35,23 +63,15 @@ class Register extends Component {
 
   async apiCall() {
     try {
-      this.setState({
-        firstName: "",
-        lastName: "",
-        email: "",
-        password: "",
-        institution: "",
-        contact: "",
-        securityQue: "",
-        securityAns: "",
-        registrationFlag: true,
-        modalFlag: true,
-      });
-    } catch (err) {
-      this.setState({
-        errorMsg: errMsg["4"],
-        validationErrorFlag: true,
-      });
+      let r = await registerUser(this.state)
+      if(r.message === "OK") {
+        alert(`User Created with name: ${r.displayName} and emailId: ${r.email} was created`)
+        this.props.history.push("/login")
+      } else if(r.message) {
+        alert(r.message)
+      }
+    } catch (error) {
+      alert("Something went wrong.")
     }
   }
 
@@ -61,7 +81,6 @@ class Register extends Component {
 
   handleRegister = (e) => {
     e.preventDefault();
-
     this.setState({
       validationErrorFlag: false,
       errorMsg: "",
@@ -78,7 +97,6 @@ class Register extends Component {
       this.state.password &&
       this.state.confirmPassword &&
       this.state.institution &&
-      this.state.contact &&
       this.state.securityQue &&
       this.state.securityAns &&
       this.state !== {} &&
@@ -87,8 +105,6 @@ class Register extends Component {
       this.state.email.trim() !== "" &&
       this.state.password.trim() !== "" &&
       this.state.confirmPassword.trim() !== "" &&
-      this.state.institution.trim() !== "" &&
-      this.state.contact.trim() !== "" &&
       this.state.securityQue.trim() !== "" &&
       this.state.securityAns.trim() !== ""
     ) {
@@ -104,6 +120,14 @@ class Register extends Component {
         this.setState({
           validationErrorFlag: true,
           errorMsg: errMsg["5"],
+        });
+        return;
+      }
+
+      if (this.state.password.trim().length < 6) {
+        this.setState({
+          validationErrorFlag: true,
+          errorMsg: errMsg["7"],
         });
         return;
       }
@@ -170,6 +194,7 @@ class Register extends Component {
                           type="email"
                           name="email"
                           onChange={this.handleOnChange}
+                          onBlur={_ => this.checkEmailAvailable()}
                           className="form-control text-field"
                           placeholder="Enter email address"
                           tabIndex="3"
@@ -186,9 +211,11 @@ class Register extends Component {
                           className="form-control text-field"
                           tabIndex="4"
                         >
-                          <option value="">select</option>
-                          <option value="1">Dal</option>
-                          <option value="2">St.Marys</option>
+                          {
+                            this.state.orgs.map((org, i) =>
+                              <option key={org.id} value={org.id}>{org.name}</option>
+                            )
+                          }
                         </select>
                       </summary>
                       <summary className="form-group pt-2 pb-2">
@@ -216,19 +243,6 @@ class Register extends Component {
                           tabIndex="6"
                         />
                       </summary>
-                      <summary className="form-group pt-2 pb-2">
-                        <label>Contact*</label>
-
-                        <input
-                          required
-                          type="text"
-                          name="contact"
-                          onChange={this.handleOnChange}
-                          className="form-control text-field-right"
-                          placeholder="Enter contact number"
-                          tabIndex="7"
-                        />
-                      </summary>
 
                       <summary className="form-group pt-2 pb-2">
                         <label>Security Question*</label>
@@ -253,6 +267,9 @@ class Register extends Component {
                           </option>
                           <option value="What is your favourite food?">
                             What is your favourite food?
+                          </option>
+                          <option value="What is your place of birth?">
+                            What is your place of birth?
                           </option>
                         </select>
                       </summary>
@@ -311,4 +328,4 @@ class Register extends Component {
   }
 }
 
-export default Register;
+export default withRouter(Register);

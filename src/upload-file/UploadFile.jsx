@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
-import PropTypes from 'prop-types'
+// import PropTypes from 'prop-types'
 
 function UploadFile(props) {
     const [files, setFiles] = useState([])
     async function uploadFiles() {
-        if(files.length == 0) {
+        if(files.length === 0) {
             alert("Please select file to upload")
         } else {
             const formData = new FormData()
@@ -29,9 +29,9 @@ function UploadFile(props) {
     )
 }
 
-UploadFile.propTypes = {
+// UploadFile.propTypes = {
 
-}
+// }
 
 export default UploadFile
 
