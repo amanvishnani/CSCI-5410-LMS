@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import "./Login.css";
 import errMsg from "../errorMessages";
+import { login } from "./LoginService";
 
 class Login extends Component {
   constructor(props) {
@@ -27,10 +28,13 @@ class Login extends Component {
 
   async apiCall() {
     try {
-      console.log("login worked");
-      localStorage.setItem("email", this.state.email);
-      this.props.history.push("/home");
+      let challengeData = await login(this.state.email, this.state.password)
+      if(challengeData.type === "CHALLENGE") {
+        let {challengeCode, question} = challengeData;
+        this.props.history.push(`/challenge?challengeCode=${challengeCode}&question="${question}"`);
+      }
     } catch (err) {
+      console.log(err)
       this.setState({
         validationErrorFlag: true,
         errorMsg: errMsg["1"],

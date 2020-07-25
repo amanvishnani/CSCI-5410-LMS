@@ -3,6 +3,7 @@ import { Navbar, Nav } from "react-bootstrap";
 
 class AppHeader extends Component {
   render() {
+    let isLoggedIn = localStorage.getItem("loggedIn") === "true";
     return (
       <section>
         <Navbar className="navHeader" expand="lg">
@@ -14,15 +15,27 @@ class AppHeader extends Component {
           </Navbar.Toggle>
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav>
-              <Nav.Link className="text-light font-weight-bold" href="/login">
+              {
+                !isLoggedIn && 
+                <Nav.Link className="text-light font-weight-bold" href="/login">
                 Login
               </Nav.Link>
-              <Nav.Link
+              }
+              {
+                !isLoggedIn &&
+                <Nav.Link
+                  className="text-light font-weight-bold"
+                  href="/register"
+                >
+                  Register
+                </Nav.Link>
+              }
+              { isLoggedIn && <Nav.Link
                 className="text-light font-weight-bold"
-                href="/register"
+                href="/logout"
               >
-                Register
-              </Nav.Link>
+                Logout
+              </Nav.Link>}
             </Nav>
           </Navbar.Collapse>
         </Navbar>

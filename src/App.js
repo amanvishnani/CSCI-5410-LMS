@@ -4,11 +4,13 @@ import Login from "./login/Login";
 import Register from "./register/Register";
 import UploadFile from "./upload-file/UploadFile";
 import Home from "./home/Home";
+import Logout from "./logout/Logout";
 import NotFound from "./NotFound";
 import AppHeader from "./AppHeader";
 import ChatBox from "./chat_module/ChatBox";
 
 import "./App.css";
+import Challenge from "./challenge/Challenge";
 
 class App extends Component {
   render() {
@@ -27,7 +29,13 @@ class App extends Component {
               render={(props) => <Login {...props}></Login>}
             ></Route>
 
+            <Route
+              path="/logout"
+            ><Logout></Logout></Route>
+
             <Route path="/register" component={Register}></Route>
+
+            <Route path="/challenge" component={Challenge}></Route>
 
             <Route
               path="/home"
