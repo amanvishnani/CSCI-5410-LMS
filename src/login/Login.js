@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import "./Login.css";
 import errMsg from "../errorMessages";
 import { login } from "./LoginService";
+import "react-loader-spinner/dist/loader/css/react-spinner-loader.css"
+import Loader from 'react-loader-spinner'
 
 class Login extends Component {
   constructor(props) {
@@ -13,10 +15,11 @@ class Login extends Component {
       validationErrorFlag: false,
       loginFlag: false,
       errorMsg: "",
+      loading: false
     };
   }
 
-  componentDidMount() {}
+  componentDidMount() { }
 
   handleChange = (e) => {
     this.setState({
@@ -28,17 +31,23 @@ class Login extends Component {
 
   async apiCall() {
     try {
+      this.state.loading = true;
       let challengeData = await login(this.state.email, this.state.password)
-      if(challengeData.type === "CHALLENGE") {
-        let {challengeCode, question} = challengeData;
+      if (challengeData.type === "CHALLENGE") {
+        let { challengeCode, question } = challengeData;
         this.props.history.push(`/challenge?challengeCode=${challengeCode}&question="${question}"`);
       }
     } catch (err) {
+      if (err.response && err.response.data && err.response.data.message) {
+        alert(err.response.data.message)
+      }
       console.log(err)
       this.setState({
         validationErrorFlag: true,
         errorMsg: errMsg["1"],
       });
+    } finally {
+      this.setState({loading : false});
     }
   }
 
@@ -121,13 +130,23 @@ class Login extends Component {
                     </main>
 
                     <div className="container text-center">
-                      <button
-                        onClick={this.onLoginSubmit}
-                        type="submit"
-                        className="btn btn-info btn-centre"
-                      >
-                        Login
+                      {
+                        this.state.loading ?
+                          <Loader
+                            type="ThreeDots"
+                            color="#00BFFF"
+                            height={40}
+                            width={40}
+                            timeout={10000}
+                          /> :
+                          <button
+                            onClick={this.onLoginSubmit}
+                            type="submit"
+                            className="btn btn-info btn-centre"
+                          >
+                            Login
                       </button>
+                      }
                       <p />
 
                       <p className="register text-left">
