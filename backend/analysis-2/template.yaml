@@ -1,0 +1,58 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  analysis-2
+
+  Sample SAM Template for analysis-2
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 20
+
+Resources:
+  FileIngesterFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: analysis_app/
+      Handler: app.file_ingester
+      Runtime: python3.8
+      Policies:
+        - S3FullAccessPolicy:
+            BucketName: "upload-analysis-2"
+      Events:
+        HttpCall:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /ingest-file
+            Method: get
+
+  SentimentAnalyzerFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: analysis_app/
+      Handler: app.sentimentAnalysis
+      Runtime: python3.8
+      Policies:
+        - S3FullAccessPolicy:
+            BucketName: "upload-analysis-2"
+        - S3FullAccessPolicy:
+            BucketName: "analysis-result"
+        - ComprehendBasicAccessPolicy: {}
+      Events:
+        S3NewObjectEvent:
+          Type: S3 # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Bucket: !Ref UploadAnalysis2
+            Events: s3:ObjectCreated:*
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: suffix
+                    Value: ".json"
+
+  UploadAnalysis2:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: "upload-analysis-2"
+
