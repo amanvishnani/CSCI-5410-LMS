@@ -15,6 +15,12 @@ class AppHeader extends Component {
         >
           Register
       </Nav.Link>
+      <Nav.Link
+          className="text-light font-weight-bold"
+          href="/help"
+        >
+          Help
+      </Nav.Link>
       </React.Fragment>
     )
   }
@@ -33,6 +39,12 @@ class AppHeader extends Component {
         href="/upload-file"
       >
         Upload Files
+      </Nav.Link>
+      <Nav.Link
+          className="text-light font-weight-bold"
+          href="/help"
+        >
+          Help
       </Nav.Link>
     </React.Fragment>
     )
