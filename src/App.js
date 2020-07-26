@@ -11,6 +11,7 @@ import ChatBox from "./chat_module/ChatBox";
 
 import "./App.css";
 import Challenge from "./challenge/Challenge";
+import VirtualAssistant from "./virtualAssistant/VirtualAssistant";
 
 class App extends Component {
   render() {
@@ -34,6 +35,8 @@ class App extends Component {
             ><Logout></Logout></Route>
 
             <Route path="/register" component={Register}></Route>
+
+            <Route path="/help" component={VirtualAssistant}></Route>
 
             <Route path="/challenge" component={Challenge}></Route>
 
