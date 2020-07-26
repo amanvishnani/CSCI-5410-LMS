@@ -7,13 +7,20 @@ import Home from "./home/Home";
 import Logout from "./logout/Logout";
 import NotFound from "./NotFound";
 import AppHeader from "./AppHeader";
-import ChatBox from "./chat_module/ChatBox";
-
 import "./App.css";
 import Challenge from "./challenge/Challenge";
+import VirtualAssistant from "./virtualAssistant/VirtualAssistant";
+import ChatBox from "./chat_module/ChatBox";
 
 class App extends Component {
   render() {
+    let isLoggedIn = localStorage.getItem("loggedIn") === "true";
+    let showChat;
+
+    if (this.props && this.props.location && this.props.location.pathname) {
+      showChat = this.props.location.pathname !== "/help";
+    }
+
     return (
       <article className="">
         <header>
@@ -29,11 +36,13 @@ class App extends Component {
               render={(props) => <Login {...props}></Login>}
             ></Route>
 
-            <Route
-              path="/logout"
-            ><Logout></Logout></Route>
+            <Route path="/logout">
+              <Logout></Logout>
+            </Route>
 
             <Route path="/register" component={Register}></Route>
+
+            <Route path="/help" component={VirtualAssistant}></Route>
 
             <Route path="/challenge" component={Challenge}></Route>
 
@@ -42,9 +51,7 @@ class App extends Component {
               render={(props) => <Home {...props}></Home>}
             ></Route>
 
-            <Route
-              path="/upload-file"
-            >
+            <Route path="/upload-file">
               <UploadFile></UploadFile>
             </Route>
 
@@ -55,7 +62,7 @@ class App extends Component {
             <Redirect to="/not-found"></Redirect>
           </Switch>
         </section>
-        <section>{localStorage.email ? <ChatBox></ChatBox> : null}</section>
+        <section>{isLoggedIn && showChat ? <ChatBox></ChatBox> : null}</section>
       </article>
     );
   }
