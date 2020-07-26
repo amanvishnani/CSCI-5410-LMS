@@ -94,8 +94,38 @@ def sentimentAnalysis(event, context):
             SentimentDetails = get_sentiment_details(text, hack)
             saveSentimentDetails(id, SentimentDetails, s3)
 
+def get_all_s3_objects(bucket):
+    """Get a list of all keys in an S3 bucket."""
+    objects = []
 
+    kwargs = {'Bucket': bucket}
+    while True:
+        resp = s3.list_objects_v2(**kwargs)
+        for obj in resp['Contents']:
+            object_summary = {
+                'LastModified': obj['LastModified'],
+                'Key': obj['Key']
+            }
+            objects.append(object_summary)
 
+        try:
+            kwargs['ContinuationToken'] = resp['NextContinuationToken']
+        except KeyError:
+            break
+    return sorted(objects, key = lambda i: i['LastModified'], reverse=True)[:100]
+
+def getSentiments(event, context):
+    sentimentObjs = get_all_s3_objects(analysisResultBucket)
+    my_list = []
+    for obj in sentimentObjs:
+        resultJson = get_bucket_data(obj['Key'], analysisResultBucket, s3)
+        my_list.append(resultJson)
+    return {
+        "statusCode": 200,
+        "body": json.dumps(my_list),
+    }
+
+# print(getSentiments(None, None))
 # checkFileExists(1, analysisResultBucket, s3)
 # file_ingester(None, None)
 

@@ -26,6 +26,21 @@ Resources:
           Properties:
             Path: /ingest-file
             Method: get
+  GetAllSentimentResultsFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: analysis_app/
+      Handler: app.getSentiments
+      Runtime: python3.8
+      Policies:
+        - S3FullAccessPolicy:
+            BucketName: "analysis-result"
+      Events:
+        HttpCall:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /get-analysis-result
+            Method: get
 
   SentimentAnalyzerFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
