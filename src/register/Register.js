@@ -28,12 +28,12 @@ class Register extends Component {
   }
 
   async setupOrgs() {
-    let orgs = await getOrgs()
+    let orgs = await getOrgs();
     let partialState = {
-      orgs
-    }
-    if(orgs.length > 0) {
-      partialState.institution = orgs[0].id  
+      orgs,
+    };
+    if (orgs.length > 0) {
+      partialState.institution = orgs[0].id;
     }
     this.setState(partialState);
   }
@@ -50,7 +50,7 @@ class Register extends Component {
   }
 
   componentDidMount() {
-    this.setupOrgs()
+    this.setupOrgs();
   }
 
   handleOnChange = (e) => {
@@ -63,15 +63,18 @@ class Register extends Component {
 
   async apiCall() {
     try {
-      let r = await registerUser(this.state)
-      if(r.message === "OK") {
-        alert(`User Created with name: ${r.displayName} and emailId: ${r.email} was created`)
-        this.props.history.push("/login")
-      } else if(r.message) {
-        alert(r.message)
+      let r = await registerUser(this.state);
+
+      if (r.message === "OK") {
+        alert(
+          `User Created with name: ${r.data.displayName} and emailId: ${r.data.email} was created`
+        );
+        this.props.history.push("/login");
+      } else if (r.message) {
+        alert(r.message);
       }
     } catch (error) {
-      alert("Something went wrong.")
+      alert("Something went wrong.");
     }
   }
 
@@ -194,7 +197,7 @@ class Register extends Component {
                           type="email"
                           name="email"
                           onChange={this.handleOnChange}
-                          onBlur={_ => this.checkEmailAvailable()}
+                          onBlur={(_) => this.checkEmailAvailable()}
                           className="form-control text-field"
                           placeholder="Enter email address"
                           tabIndex="3"
@@ -211,11 +214,11 @@ class Register extends Component {
                           className="form-control text-field"
                           tabIndex="4"
                         >
-                          {
-                            this.state.orgs.map((org, i) =>
-                              <option key={org.id} value={org.id}>{org.name}</option>
-                            )
-                          }
+                          {this.state.orgs.map((org, i) => (
+                            <option key={org.id} value={org.id}>
+                              {org.name}
+                            </option>
+                          ))}
                         </select>
                       </summary>
                       <summary className="form-group pt-2 pb-2">

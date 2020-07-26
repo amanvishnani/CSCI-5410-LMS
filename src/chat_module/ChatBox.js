@@ -5,80 +5,66 @@ import axios from "axios";
 class ChatBox extends Component {
   constructor(props) {
     super(props);
-    let email = localStorage.email;
-    let subId = "";
-    if (email === "abc@as.in") {
-      subId = "trial-sub";
-    } else {
-      subId = "Pratheep";
-    }
+
     this.state = {
-      email: email,
-      subId: subId,
       messageList: [],
     };
 
-    console.log(this.state);
-    this.apiSubCall();
+    //this.apiSubCall();
   }
 
   async apiSubCall() {
     console.log("inside sub");
-    while (true) {
-      await axios
-        .get(
-          //`https://us-central1-testproject-277421.cloudfunctions.net/subscribe?id=${this.state.subId}`
-          `https://us-central1-testproject-277421.cloudfunctions.net/sub-node?id=${this.state.subId}`
-        )
-        .then((res) => {
-          let data = res.data;
-          console.log("data", data, new Date());
-          if (data && data.length) {
-            let messages = this.state.messageList;
-            Object.values(data).forEach((value) => {
-              console.log("value", value);
-              let author = value.message.senderId;
-              if (author !== localStorage.email) {
-                let text = author + ": " + value.message.text;
-                let message = {
-                  author: "them",
-                  type: value.message.type,
-                  data: { text: text },
-                };
 
-                messages.push(message);
+    if (localStorage.userData) {
+      let userData = JSON.parse(localStorage.userData);
+      if (
+        userData &&
+        userData.org &&
+        userData.org.name &&
+        userData.user.orgId &&
+        userData.user.id
+      ) {
+        let subId =
+          userData.org.name.charAt(0) +
+          userData.user.orgId +
+          "-" +
+          userData.user.id;
+
+        while (true) {
+          await axios
+            .get(
+              `https://us-central1-testproject-277421.cloudfunctions.net/sub-node?id=${subId}`
+            )
+            .then((res) => {
+              let data = res.data;
+              console.log("data", data, new Date());
+              if (data && data.length) {
+                let messages = this.state.messageList;
+                Object.values(data).forEach((value) => {
+                  console.log("value", value);
+                  let author = value.message.senderId;
+                  if (author !== localStorage.email) {
+                    let text = author + ": " + value.message.text;
+                    let message = {
+                      author: "them",
+                      type: value.message.type,
+                      data: { text: text },
+                    };
+
+                    messages.push(message);
+                  }
+                });
+                this.setState({
+                  messageList: messages,
+                });
               }
-            });
-            this.setState({
-              messageList: messages,
-            });
-          }
-          /* 
-          //python backend logic
-          if (data && Object.keys(data).length > 0) {
-            Object.values(data).forEach((value) => {
-              let length = value.length;
-              value = value.slice(2, length - 1);
-              value = JSON.parse(value);
-              let messages = this.state.messageList;
+            })
+            .catch((err) => console.log("subscriber err data", err));
 
-              let message = {
-                author: "them",
-                type: "text",
-                data: { text: value.message.text },
-              };
-
-              messages.push(message);
-
-              this.setState({
-                messageList: messages,
-              });
-            });
-          } */
-        })
-        .catch((err) => console.log("subscriber err data", err));
-
-      await new Promise((r) => setTimeout(r, 5000));
+          await new Promise((r) => setTimeout(r, 5000));
+        }
+      }
     }
   }
 
@@ -108,27 +94,41 @@ class ChatBox extends Component {
   }
 
   async apiPubCall(message) {
-    console.log("message", message);
+    if (localStorage.userData) {
+      let userData = JSON.parse(localStorage.userData);
+      if (
+        userData &&
+        userData.user &&
+        userData.user.firstName &&
+        userData.user.lastName &&
+        userData.user.id &&
+        userData.user.orgId &&
+        userData.org.name
+      ) {
+        let name = userData.user.firstName + " " + userData.user.lastName;
 
-    let messageObj = {
-      senderId: localStorage.email,
-      text: message.data.text,
-      type: message.type,
-    };
+        let messageObj = {
+          senderId: name,
+          text: message.data.text,
+          type: message.type,
+          userId: userData.user.id,
+          orgId: userData.user.orgId,
+          orgName: userData.org.name,
+        };
 
-    console.log("messageObj", messageObj);
+        let obj = {
+          message: messageObj,
+        };
 
-    let obj = {
-      message: messageObj,
-    };
-
-    await axios
-      .post(
-        "https://us-central1-testproject-277421.cloudfunctions.net/publish",
-        obj
-      )
-      .then((res) => console.log("publisher res data", res.data))
-      .catch((err) => console.log("publisher err data", err));
+        await axios
+          .post(
+            "https://us-central1-testproject-277421.cloudfunctions.net/publish",
+            obj
+          )
+          .then((res) => console.log("publisher res data", res.data))
+          .catch((err) => console.log("publisher err data", err));
+      }
+    }
   }
 
   _sendMessage(text) {

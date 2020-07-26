@@ -32,24 +32,32 @@ exports.helloWorld = (req, res) => {
 
     let messageCount = 0;
     const messageHandler = (message) => {
-      let data = message.data;
-      console.log(`Received message ${message.id}:`);
-      console.log(`\tData: ${data}`);
-      console.log(`\tData type:`, typeof data);
-      let dataStr = message.data.toString();
-      console.log(`\dataStr: ${dataStr}`);
-      console.log(`\dataStr: type`, typeof dataStr);
+      if (message) {
+        let data = message.data;
+        if (data) {
+          let dataStr = message.data.toString();
+          if (dataStr.length > 10) {
+            let dataJson = JSON.parse(dataStr);
 
-      if (dataStr.length > 10) {
-        let dataJson = JSON.parse(dataStr);
-        console.log(`\dataJson: ${dataJson}`);
-        console.log(`\dataJson: type`, typeof dataJson);
+            let arr = subscriptionName.split("-");
+            let userId;
+            console.log("arr", arr);
+            if (arr.length > 1) {
+              userId = parseInt(arr[1]);
+            }
+            if (userId !== dataJson.message.userId) {
+              let orgCheck =
+                dataJson.message.orgName.charAt(0) + dataJson.message.orgId;
 
-        console.log(`\tAttributes: ${message.attributes}`);
-        output.push(dataJson);
+              if (orgCheck === arr[0]) {
+                output.push(dataJson);
+              }
+            }
+          }
+          messageCount += 1;
+          message.ack();
+        }
       }
-      messageCount += 1;
-      message.ack();
     };
 
     subscription.on("message", messageHandler);

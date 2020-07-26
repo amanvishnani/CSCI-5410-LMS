@@ -33,20 +33,13 @@ def get_callback(f, data):
 
 def hello_world(request):
 
-    print('request', request)
     try:
         data = request.data
         if(data != ''):
-            print('data byte 1111', data)
-            print('data type', type(data))
 
             data = str(data)
-            print('data string 2222', data)
-            print('data type', type(data))
 
             data = data[2:len(data)-1]
-            print('data string 3333', data)
-            print('data type', type(data))
 
             if(data != ''):
                 futures.update({data: None})
@@ -65,6 +58,11 @@ def hello_world(request):
 
                 print("Published message with error handler.")
 
+                data_as_obj = json.loads(data)
+
+                orgId = data_as_obj['message']['orgId']
+                orgId = str(orgId)
+
                 t = time.localtime()
 
                 yr = time.strftime("%Y", t)
@@ -73,7 +71,7 @@ def hello_world(request):
                 mon = time.strftime("%m", t)
                 day = time.strftime("%d", t)
                 file_name = day + mon + yr + hr + min + '.json'
-                file_name_check = day + mon + yr + hr
+                file_name_check = orgId + '/' + day + mon + yr + hr
 
                 bucket_name = "chatmessages"
                 client = storage.Client(
@@ -86,37 +84,28 @@ def hello_world(request):
                 for blob in client.list_blobs(bucket_name, prefix=file_name_check):
                     content_from_bucket = blob.download_as_string()
                     file_name = blob.name
-                    print('file_name blob', file_name)
-                    print('content_from_bucket blob', content_from_bucket)
+                    file_name_arr = file_name.split('/')
+                    if len(file_name_arr) > 1:
+                        file_name = file_name_arr[1]
 
                 if content_from_bucket != '':
                     content_as_str = str(content_from_bucket)
-                    print('content_as_str 1', content_as_str)
                     length = len(content_as_str) - 1
                     content_as_str = content_as_str[2:length]
-                    print('content_as_str 2', content_as_str)
                     content_as_dict = json.loads(content_as_str)
-                    print('content_as_dict 1', content_as_dict)
-
-                data_as_obj = json.loads(data)
-                print('data_as_obj', data_as_obj)
 
                 id = uuid.uuid1()
-                print('id', id)
-                print('type id', type(id))
 
                 idstr = str(id)
-                print('id', idstr)
-                print('type id', type(idstr))
 
                 data_as_obj['message']['id'] = idstr
-                print('data_as_obj', data_as_obj)
 
                 content_as_dict.append(data_as_obj)
-                print('content_as_dict 2', content_as_dict)
+
+                print('content_as_dict', content_as_dict)
 
                 if len(content_as_dict) > 0:
-                    blob = bucket.blob(file_name)
+                    blob = bucket.blob(orgId+'/'+file_name)
                     file_name = '/tmp/' + file_name
                     print('file_name before open', file_name)
                     with open(file_name, 'w') as outfile:
