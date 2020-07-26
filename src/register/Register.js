@@ -3,7 +3,7 @@ import React, { Component } from "react";
 import "./Register.css";
 import errMsg from "../errorMessages";
 import { Modal, Button } from "react-bootstrap";
-import { getOrgs, getEmailAvailibility, registerUser } from "./RegisterService";
+import { getOrgs, getEmailAvailibility, registerUser, createSubscription } from "./RegisterService";
 import { withRouter } from "react-router-dom";
 
 class Register extends Component {
@@ -69,6 +69,15 @@ class Register extends Component {
         alert(
           `User Created with name: ${r.data.displayName} and emailId: ${r.data.email} was created`
         );
+        let { uid } = r.data;
+        let { institution } = this.state
+        let orgName = ''
+        for (const org of this.state.orgs) {
+          if (`${org.id}` === `${institution}`) {
+            orgName = org.name
+          }
+        }
+        createSubscription(uid, institution, orgName)
         this.props.history.push("/login");
       } else if (r.message) {
         alert(r.message);

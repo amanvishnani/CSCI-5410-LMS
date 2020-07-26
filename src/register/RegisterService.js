@@ -1,5 +1,5 @@
 import Axios from "axios";
-import { REGISTER_BASE_URL } from "../BaseUrls";
+import { REGISTER_BASE_URL, CREATE_SUB_URL } from "../BaseUrls";
 
 async function getOrgs() {
     let orgs = await Axios.get(`${REGISTER_BASE_URL}/orgs`)
@@ -27,8 +27,14 @@ async function registerUser(state) {
     return userResp.data;
 }
 
+function createSubscription(userId, orgId, orgName) {
+    return Axios.post(`${CREATE_SUB_URL}`, {
+        userId, orgId, orgName
+    })
+}
+
 export {
     getOrgs,
     getEmailAvailibility,
-    registerUser
+    registerUser, createSubscription
 }
