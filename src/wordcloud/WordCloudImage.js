@@ -18,7 +18,7 @@ class WordCloudImage extends Component {
           Generated Word Cloud
         </h1>
         <img
-          src="https://storage.googleapis.com/group3-analysis-1/WordCloud.png"
+          src="https://csci5410-wordcloud.s3.amazonaws.com/WordCloud.png"
           alt="Logo"
         />
       </div>
