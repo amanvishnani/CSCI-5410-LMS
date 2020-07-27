@@ -43,10 +43,17 @@ exports.helloWorld = (req, res) => {
             let arr = subscriptionName.split("-");
             let userId;
             console.log("arr", arr);
+            console.log("dataJson", dataJson);
             if (arr.length > 1) {
               userId = parseInt(arr[1]);
             }
-            if (userId !== dataJson.message.userId) {
+            if (
+              dataJson.message &&
+              dataJson.message.userId &&
+              userId !== dataJson.message.userId &&
+              dataJson.message.orgName &&
+              dataJson.message.orgId
+            ) {
               let orgCheck =
                 dataJson.message.orgName.charAt(0) + dataJson.message.orgId;
 
@@ -70,7 +77,7 @@ exports.helloWorld = (req, res) => {
       return res.status(200).send(output);
     }, timeout * 100);
   } catch (e) {
-    console.log("exception");
-    res.status(400).send(output);
+    console.log("exception", e);
+    res.status(400).send("failed");
   }
 };
