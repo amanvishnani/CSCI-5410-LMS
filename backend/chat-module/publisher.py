@@ -14,7 +14,7 @@ topic_path = publisher.topic_path(project_id, topic_id)
 futures = dict()
 headers = {
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET',
+    'Access-Control-Allow-Methods': '*',
     'Access-Control-Allow-Headers': 'Content-Type',
     'Access-Control-Max-Age': '3600',
 }

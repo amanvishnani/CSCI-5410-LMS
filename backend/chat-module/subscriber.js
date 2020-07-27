@@ -11,12 +11,13 @@ exports.helloWorld = (req, res) => {
   console.log("subscriptionName", subscriptionName);
 
   res.set("Access-Control-Allow-Origin", "*");
-  res.set("Access-Control-Allow-Methods", "GET");
+  res.set("Access-Control-Allow-Methods", "*");
   res.set("Access-Control-Allow-Headers", "Content-Type");
   res.set("Access-Control-Max-Age", "3600");
 
-  /*   let message = req.query.message || req.body.message || 'Hello World!';
-  res.status(200).send(message); */
+  if (req.method === "OPTIONS") {
+    return res.status(204).send("Success");
+  }
 
   const timeout = 30;
   const { PubSub } = require("@google-cloud/pubsub");
@@ -66,7 +67,7 @@ exports.helloWorld = (req, res) => {
       subscription.removeListener("message", messageHandler);
       console.log(`${messageCount} message(s) received.`);
       console.log("output", output, new Date());
-      res.status(200).send(output);
+      return res.status(200).send(output);
     }, timeout * 100);
   } catch (e) {
     console.log("exception");
