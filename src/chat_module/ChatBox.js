@@ -39,7 +39,7 @@ class ChatBox extends Component {
             .then((res) => {
               let data = res.data;
               console.log("data", data, new Date());
-              if (data && data.length) {
+              if (res.status === 200 && data && data.length) {
                 let messages = this.state.messageList;
                 Object.values(data).forEach((value) => {
                   console.log("value", value);
@@ -60,7 +60,9 @@ class ChatBox extends Component {
                 });
               }
             })
-            .catch((err) => console.log("subscriber received with error."));
+            .catch((err) => {
+              console.log("subscriber received with error.");
+            });
 
           await new Promise((r) => setTimeout(r, 5000));
         }
