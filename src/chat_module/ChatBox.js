@@ -60,9 +60,7 @@ class ChatBox extends Component {
                 });
               }
             })
-            .catch((err) =>
-              console.log("subscriber received with error.", err)
-            );
+            .catch((err) => console.log("subscriber received with error."));
 
           await new Promise((r) => setTimeout(r, 5000));
         }
