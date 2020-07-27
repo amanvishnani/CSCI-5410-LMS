@@ -1,18 +1,52 @@
-import React, {  } from 'react'
-import { useFetch } from './SentimentService'
+import React, { useState, useEffect } from 'react'
 import { GET_SENTIMENT_URL, INGEST_FILE_URL } from '../BaseUrls'
 import Axios from 'axios'
+import Loader from 'react-loader-spinner'
 
 export default function SentimentAnalyzer() {
-    const messages = useFetch(`${GET_SENTIMENT_URL}`)
+    const [loading, setLoading] = useState(false)
+    const [messages, setMessages] = useState([])
 
-    function ingestFile() {
-        Axios.get(`${INGEST_FILE_URL}`)
+    async function ingestFile() {
+        setLoading(true)
+        await Axios.get(`${INGEST_FILE_URL}`)
+        setLoading(false)
     }
-    
+
+
+    async function getMessages() {
+        setLoading(true)
+        let r = await Axios.get(`${GET_SENTIMENT_URL}`);
+        let data = r.data;
+        setMessages(data)
+        setLoading(false)
+    }
+
+    useEffect(() => {
+        getMessages()
+    }, []) // Component Did Mount
+
+
+    function renderButtons() {
+        if (loading) {
+            return <Loader
+                type="ThreeDots"
+                color="#00BFFF"
+                height={40}
+                width={40}
+                timeout={10000}
+            />
+        } else {
+            return <React.Fragment>
+                <button onClick={_ => ingestFile()}>Ingest New Data</button>
+                <button onClick={_ => getMessages()}>Refresh</button>
+            </React.Fragment>
+        }
+    }
+
     return (
         <div>
-            <button onClick={_ => ingestFile()}>Ingest New Data</button>
+            {renderButtons()}
             <table>
                 <tbody>
                     <tr>
