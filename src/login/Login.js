@@ -4,6 +4,7 @@ import errMsg from "../errorMessages";
 import { login } from "./LoginService";
 import "react-loader-spinner/dist/loader/css/react-spinner-loader.css"
 import Loader from 'react-loader-spinner'
+import { Redirect } from "react-router-dom";
 
 class Login extends Component {
   constructor(props) {
@@ -88,6 +89,9 @@ class Login extends Component {
   };
 
   render() {
+    if(localStorage.getItem("loggedIn")==="true") {
+      return <Redirect to="/home"></Redirect>
+    }
     return (
       <article>
         <div className="row">

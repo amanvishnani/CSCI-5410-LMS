@@ -3,6 +3,12 @@ import xmltodict
 import requests
 import boto3
 
+headers = {
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': '*'
+}
+
 session = boto3.Session()
 s3 = session.client('s3')
 hack = {
@@ -13,19 +19,27 @@ analysisResultBucket = "analysis-result"
 bucket_url = "https://storage.googleapis.com/chatmessages"
 
 def file_ingester(event, context):
+    operation =  event['httpMethod']
+    if(operation == "OPTIONS"):
+        return {
+            'statusCode': 204,
+            'headers': headers,
+            'body': ''
+        }
     resp = requests.get(bucket_url)
     jsonObj = xmltodict.parse(resp.text)
     filesList = jsonObj["ListBucketResult"]["Contents"]
 
     for ele in filesList:
         file_name = ele['Key']
-        print(ele)
+        # print(ele)
         txt = (requests.get(bucket_url+"/"+file_name)).text
-        print(file_name)
+        # print(file_name)
         upload_file(s3, file_name, txt)
 
     return {
         "statusCode": 200,
+        'headers': headers,
         "body": json.dumps({
             "message": "OK",
         }),
@@ -51,9 +65,11 @@ def get_bucket_data(fileName, bucketName, client):
     bodyJson = json.loads(body) 
     return bodyJson
 
-def checkFileExists(id, analysisResultBucket, s3):
+def checkFileExists(uniqId, analysisResultBucket, s3):
     try:
-        s3.head_object(Bucket=analysisResultBucket,Key=id+".json")
+        fileName = uniqId+".json"
+        # print(fileName)
+        s3.head_object(Bucket=analysisResultBucket,Key=fileName)
         return True
     except:
         return False
@@ -82,6 +98,7 @@ def sentimentAnalysis(event, context):
     s3_record = event['Records'][0]['s3']
     bucketName = s3_record['bucket']['name']
     fileName = s3_record['object']['key']
+    # print(fileName)
     bodyJson = get_bucket_data(fileName, bucketName, s3) 
     for ele in bodyJson:
         message = ele['message']
@@ -89,8 +106,9 @@ def sentimentAnalysis(event, context):
         id = message['id']
         fileExist = checkFileExists(id, analysisResultBucket, s3)
         if(fileExist):
-            return
+            continue
         else:
+            print("Calcuating Sentiment Details")
             SentimentDetails = get_sentiment_details(text, hack)
             saveSentimentDetails(id, SentimentDetails, s3)
 
@@ -115,6 +133,13 @@ def get_all_s3_objects(bucket):
     return sorted(objects, key = lambda i: i['LastModified'], reverse=True)[:100]
 
 def getSentiments(event, context):
+    operation =  event['httpMethod']
+    if(operation == "OPTIONS"):
+        return {
+            'statusCode': 204,
+            'headers': headers,
+            'body': ''
+        }
     sentimentObjs = get_all_s3_objects(analysisResultBucket)
     my_list = []
     for obj in sentimentObjs:
@@ -122,6 +147,7 @@ def getSentiments(event, context):
         my_list.append(resultJson)
     return {
         "statusCode": 200,
+        'headers': headers,
         "body": json.dumps(my_list),
     }
 

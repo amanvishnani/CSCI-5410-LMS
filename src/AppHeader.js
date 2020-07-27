@@ -30,6 +30,9 @@ class AppHeader extends Component {
         <Nav.Link className="text-light font-weight-bold" href="/help">
           Help
         </Nav.Link>
+        <Nav.Link className="text-light font-weight-bold" href="/analysis-2">
+          Sentiments Analysis
+        </Nav.Link>
       </React.Fragment>
     );
   }

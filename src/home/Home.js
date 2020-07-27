@@ -3,7 +3,10 @@ import React, { Component } from "react";
 class Home extends Component {
   render() {
     console.log(localStorage.email);
-    return <div> this is the home page of the application</div>;
+    return <div>
+      <h1>This is Homepage</h1>
+      <h2>Explore Different sections in the menu bar</h2>
+    </div>;
   }
 }
 

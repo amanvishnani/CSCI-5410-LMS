@@ -11,6 +11,7 @@ import "./App.css";
 import Challenge from "./challenge/Challenge";
 import VirtualAssistant from "./virtualAssistant/VirtualAssistant";
 import ChatBox from "./chat_module/ChatBox";
+import SentimentAnalyzer from "./sentiment-analyzer/SentimentAnalyzer";
 
 class App extends Component {
   render() {
@@ -30,7 +31,7 @@ class App extends Component {
         <section>
           <Switch>
             <Route exact path="/" component={Login}></Route>
-
+            <Route exact path="/analysis-2" component={SentimentAnalyzer}></Route>
             <Route
               path="/login"
               render={(props) => <Login {...props}></Login>}
