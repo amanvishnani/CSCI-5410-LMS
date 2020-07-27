@@ -10,7 +10,7 @@ class ChatBox extends Component {
       messageList: [],
     };
 
-    //this.apiSubCall();
+    this.apiSubCall();
   }
 
   async apiSubCall() {
