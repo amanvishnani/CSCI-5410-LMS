@@ -12,6 +12,8 @@ import Challenge from "./challenge/Challenge";
 import VirtualAssistant from "./virtualAssistant/VirtualAssistant";
 import ChatBox from "./chat_module/ChatBox";
 import SentimentAnalyzer from "./sentiment-analyzer/SentimentAnalyzer";
+import WordCloud from "./wordcloud/WordCloud";
+import WordCloudImage from "./wordcloud/WordCloudImage";
 
 class App extends Component {
   render() {
@@ -31,7 +33,11 @@ class App extends Component {
         <section>
           <Switch>
             <Route exact path="/" component={Login}></Route>
-            <Route exact path="/analysis-2" component={SentimentAnalyzer}></Route>
+            <Route
+              exact
+              path="/analysis-2"
+              component={SentimentAnalyzer}
+            ></Route>
             <Route
               path="/login"
               render={(props) => <Login {...props}></Login>}
@@ -55,6 +61,9 @@ class App extends Component {
             <Route path="/upload-file">
               <UploadFile></UploadFile>
             </Route>
+
+           <Route exact path="/generate-wordcloud" component={WordCloud}/>
+           <Route exact path="/display-wordcloud" component={WordCloudImage}/>
 
             <Route
               path="/not-found"

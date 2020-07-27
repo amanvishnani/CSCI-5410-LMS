@@ -47,6 +47,10 @@ class AppHeader extends Component {
         <Nav.Link className="text-light font-weight-bold" href="/analysis-2">
           Sentiments Analysis
         </Nav.Link>
+        <Nav.Link className="text-light font-weight-bold" href="/generate-wordcloud">
+          Word Cloud
+        </Nav.Link>
+
         <Nav.Link className="text-light font-weight-bold" href="/logout">
           Logout
         </Nav.Link>
